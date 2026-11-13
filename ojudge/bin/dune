@@ -1,4 +1,5 @@
 (executable
  (public_name ojudge)
  (name main)
- (libraries ojudge))
+ (libraries ojudge threads netcgi2 uuidm)
+ (link_flags (-ccopt -static)))

@@ -25,3 +25,62 @@ containers
 each submission runs in its own container, started by the dispatching daemon.
 
 see containers/arch.txt for container design
+
+directory structures
+====================
+
+code eval
+---------
+
+a code evaluation has the following directory structure:
+
+├ {submission_id}
+    ├── code
+    │   └── main.ml
+    ├── inputs
+    │   ├── ex1.in
+    │   ├── ex2.in
+    │   └── ex3.in
+    ├── outputs
+    │   ├── ex1.out
+    │   ├── ex2.out
+    │   └── ex3.out
+
+outputs are generated outputs, associated with the corresponding inputs.
+
+when judging a submission the test case answers aren't in the container that compiles and runs the code.
+
+additionally, the code and inputs directories are read only. the code because there's no reason to change it, and build is done in a temp directory, and the inputs to ensure they aren't tampered with. these are bind mounted in with the :ro permissions set. 
+
+outputs obviously have to be writable in the container.
+
+from within the container we have the following mount points for the above code (note: the above code is what it looks like on the server's filesystem, not in the container):
+
+/code
+/inputs
+/outputs
+
+these have 1:1 correspondences with the above directories on the server.
+
+server filesystem
+-----------------
+
+we know what a singular code evaluation looks like on the filesystem from above, below is the rest of the server's state (there is no conventional db, only filesystem state):
+
+| /var/lib/ojudge
+    
+
+
+ok, so what do we actually need?
+
+submissions/{user_id}/{submission_id}
+    /{data listed above (code, inputs, outputs, and additional metadata about execution)}
+pending-review/ # once a submission is reviewed, the txt file is deleted. these files just serve as a pointer to a submissions/{submission_id} dir
+    /{submission_id}.txt
+problems/{problem_id}
+    /{problem text}
+    /{'hidden' test cases (in + out)}
+contests/{contest_id}
+    /{submission links (user_id/submission_id)}
+    /{current status (user_id and completed problem count)}
+    /{problems}/{problem_id}
