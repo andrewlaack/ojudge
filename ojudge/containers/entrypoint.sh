@@ -2,4 +2,11 @@
 
 cd /code
 ocamlopt nums.cmxa str.cmxa -unsafe main.ml
-cat ex1.in | ./a.out
+
+INPUTS=$(ls | grep \\.in$)
+
+for INPUT in $INPUTS; do
+    BASE=${INPUT%.*}
+    cat $INPUT | ./a.out > $BASE.sub.out
+    diff $BASE.out $BASE.sub.out
+done
