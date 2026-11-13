@@ -1,3 +1,3 @@
 ojudge
 ======
-OCaml-based competitive programming judging platform using CGI, podman, and gVisor.
+OCaml-based competitive programming judging platform using CGI and podman.
