@@ -22,12 +22,24 @@ let uuid () =
 
 (* TODO: Make sure username can't do traversals, and guard this *)
 
+let createCodeFile username subId code language = 
+    if language = "ocaml" then
+        writeFile ("/var/lib/ojudge/" ^ username ^ "/" ^ subId ^ "/code/main.ml") code
+    else
+        if language = "cpp" then
+        writeFile ("/var/lib/ojudge/" ^ username ^ "/" ^ subId ^ "/code/main.cpp") code
+    else 
+        writeFile ("/var/lib/ojudge/" ^ username ^ "/" ^ subId ^ "/code/main.c") code
+
+
+
 let handleSubmission (cgi : Netcgi.cgi) =
+  let language = cgi#argument_value "language" in
   let code = cgi#argument_value "code" in
       let username = cgi#argument_value "username" in
             let subId = uuid () in
             let () = setupSubmissionDir subId username in
-                let () = writeFile ("/var/lib/ojudge/" ^ username ^ "/" ^ subId ^ "/code/main.ml") code in
+                let () = createCodeFile username subId code language in
                 submissionReply cgi
 
 let () = Netcgi_cgi.run handleSubmission

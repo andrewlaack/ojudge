@@ -14,8 +14,14 @@ cat <<'EOF'
         <form id="submit-code" action="submit-code" method="post">
             <label for="code">Code</label><br>
 
-            <textarea id="username" name="username" rows="20" cols="80"
-                      spellcheck="false" required></textarea><br>
+            <input id="username" name="username" rows="20" cols="80"
+                      spellcheck="false" required></input><br>
+
+              <select name="language" id="language">
+                  <option value="ocaml">OCaml</option>
+                  <option value="c">C</option>
+                  <option value="cpp">C++</option>
+              </select>
 
             <textarea id="code" name="code" rows="20" cols="80"
                       spellcheck="false" required></textarea><br>
