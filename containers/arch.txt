@@ -1,0 +1,22 @@
+architecture
+============
+
+each submission runs in its own container. 
+
+bind mounted directories into the container should have least privileges.
+
+the follwing are bind mounted in:
+
+- /code:ro
+- /inputs:ro
+- /outputs:rw
+
+containers are responsible for:
+
+- building the program
+- executing the program
+- saving the outputs
+
+containers don't know the correct answers. 
+
+containers have a timeout for total time to stop excessive build times and handle any other transient issues that may occur within the container.
