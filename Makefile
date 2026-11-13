@@ -3,7 +3,7 @@ build-container:
 
 build-ocaml:
 	cd ojudge && dune build
-	cp ojudge/_build/default/bin/main.exe cgi-bin/submit-code
+	cp ojudge/_build/default/bin/submissions.exe cgi-bin/submit-code
 	chmod 755 cgi-bin/submit-code
 run-container:
 	cd example && \

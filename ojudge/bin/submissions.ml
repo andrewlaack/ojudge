@@ -11,11 +11,11 @@ let writeFile filepath toWrite =
     Out_channel.with_open_text filepath (fun oc -> output_string oc toWrite)
 
 let setupSubmissionDir subId username = 
-    let () = mkdir ("/var/lib/ojudge/" ^ username ^ "/" ^ subId) in 
-    let () = mkdir ("/var/lib/ojudge/" ^ username ^ "/" ^ subId ^ "/code") in 
-    let () = mkdir ("/var/lib/ojudge/" ^ username ^ "/" ^ subId ^ "/inputs") in 
-    let () = mkdir ("/var/lib/ojudge/" ^ username ^ "/" ^ subId ^ "/outputs") in 
-             mkdir ("/var/lib/ojudge/" ^ username ^ "/" ^ subId ^ "/results")
+    let () = mkdir ("/var/lib/ojudge/submissions/" ^ username ^ "/" ^ subId) in 
+    let () = mkdir ("/var/lib/ojudge/submissions/" ^ username ^ "/" ^ subId ^ "/code") in 
+    let () = mkdir ("/var/lib/ojudge/submissions/" ^ username ^ "/" ^ subId ^ "/inputs") in 
+    let () = mkdir ("/var/lib/ojudge/submissions/" ^ username ^ "/" ^ subId ^ "/outputs") in 
+             mkdir ("/var/lib/ojudge/submissions/" ^ username ^ "/" ^ subId ^ "/results")
 
 let uuid () =
   Uuidm.to_string (Uuidm.v4_gen (Random.State.make_self_init ()) ())
@@ -24,14 +24,12 @@ let uuid () =
 
 let createCodeFile username subId code language = 
     if language = "ocaml" then
-        writeFile ("/var/lib/ojudge/" ^ username ^ "/" ^ subId ^ "/code/main.ml") code
+        writeFile ("/var/lib/ojudge/submissions/" ^ username ^ "/" ^ subId ^ "/code/main.ml") code
     else
         if language = "cpp" then
-        writeFile ("/var/lib/ojudge/" ^ username ^ "/" ^ subId ^ "/code/main.cpp") code
+        writeFile ("/var/lib/ojudge/submissions/" ^ username ^ "/" ^ subId ^ "/code/main.cpp") code
     else 
-        writeFile ("/var/lib/ojudge/" ^ username ^ "/" ^ subId ^ "/code/main.c") code
-
-
+        writeFile ("/var/lib/ojudge/submissions/" ^ username ^ "/" ^ subId ^ "/code/main.c") code
 
 let handleSubmission (cgi : Netcgi.cgi) =
   let language = cgi#argument_value "language" in
