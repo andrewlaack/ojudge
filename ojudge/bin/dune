@@ -1,5 +1,12 @@
 (executable
- (public_name ojudge)
+ (public_name ojudge-submissions)
  (name submissions)
  (libraries ojudge threads netcgi2 uuidm)
+ (link_flags (-ccopt -static)))
+
+(executable
+ (public_name ojudge-judge)
+ (name judge)
+ (modules judge)
+ (libraries ojudge unix)
  (link_flags (-ccopt -static)))

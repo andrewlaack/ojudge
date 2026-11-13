@@ -1,5 +1,6 @@
 build-container:
 	podman build containers -t judge
+	cd / && podman save localhost/judge | sudo -u ojudge podman load
 
 build-ocaml:
 	cd ojudge && dune build
@@ -9,11 +10,24 @@ run-container:
 	cd example && \
 	timeout 5 podman run --rm -v ./code:/code:ro -v ./inputs:/inputs:ro -v ./outputs:/outputs:rw --network=none --memory=256MB --cpus 1 judge
 
+run-judge: build-container
+	getent group ojudge >/dev/null || sudo groupadd --system ojudge
+	id ojudge >/dev/null 2>&1 || sudo useradd --system --create-home --gid ojudge ojudge
+	grep -q '^ojudge:' /etc/subuid || sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 ojudge
+	sudo loginctl enable-linger ojudge
+	sudo chgrp -R ojudge /var/lib/ojudge
+	sudo chmod -R g+rwX /var/lib/ojudge
+	cd ojudge && dune build
+	sudo install -m 755 ojudge/_build/default/bin/judge.exe /usr/local/bin/ojudge-judge
+	sudo install -m 644 ojudge-judge.service /etc/systemd/system/ojudge-judge.service
+	sudo systemctl daemon-reload
+	sudo systemctl enable ojudge-judge
+	sudo systemctl restart ojudge-judge
+
 build-cgi: build-ocaml
 	mkdir -p cgi-bin
-	cp scripts/example.sh cgi-bin/example.sh
-	cp scripts/home.sh cgi-bin/home.sh
-	cp scripts/submit.sh cgi-bin/submit.sh
+	cp scripts/home.sh cgi-bin/home
+	cp scripts/submit.sh cgi-bin/submit
 
 
 deploy-server: build-cgi

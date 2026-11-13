@@ -31,6 +31,10 @@ let createCodeFile username subId code language =
     else 
         writeFile ("/var/lib/ojudge/submissions/" ^ username ^ "/" ^ subId ^ "/code/main.c") code
 
+let requestReview subId username = 
+    mkdir ("/var/lib/ojudge/pending-review/" ^ username);
+    writeFile ("/var/lib/ojudge/pending-review/" ^ username ^ "/" ^ subId) ""
+
 let handleSubmission (cgi : Netcgi.cgi) =
   let language = cgi#argument_value "language" in
   let code = cgi#argument_value "code" in
@@ -38,6 +42,7 @@ let handleSubmission (cgi : Netcgi.cgi) =
             let subId = uuid () in
             let () = setupSubmissionDir subId username in
                 let () = createCodeFile username subId code language in
-                submissionReply cgi
+                    let () = requestReview subId username in 
+                        submissionReply cgi
 
 let () = Netcgi_cgi.run handleSubmission

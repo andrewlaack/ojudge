@@ -1,0 +1,13 @@
+[Unit]
+Description=ojudge judge worker
+After=network.target
+
+[Service]
+User=ojudge
+Group=ojudge
+ExecStart=/usr/local/bin/ojudge-judge
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
