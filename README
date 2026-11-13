@@ -1,3 +1,27 @@
 ojudge
 ======
 OCaml-based competitive programming judging platform using CGI and podman.
+
+architecture
+============
+
+web server
+----------
+
+the web server is lighttpd for CGI. This calls OCaml binaries which manage
+interactivity. Dispatching containers to evaluate solutions is performed by a daemon
+to ensure we 1) limit the number of concurrent executions 2) don't block the CGI processes
+from returning after submissions.
+
+daemon
+------
+
+there's a daemon that runs on the bare host, looking for submissions that haven't been evaluated 
+or dispatched. It also limits concurrency to two containers at a time.
+
+containers
+----------
+
+each submission runs in its own container, started by the dispatching daemon.
+
+see containers/arch.txt for container design
