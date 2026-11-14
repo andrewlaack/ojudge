@@ -78,8 +78,9 @@ submissions/{user_id}/{submission_id}
 pending-review/ # once a submission is reviewed, the txt file is deleted. these files just serve as a pointer to a submissions/{submission_id} dir
     /{submission_id}.txt
 problems/{problem_id}
-    /{problem text}
-    /{'hidden' test cases (in + out)}
+    /{problem html}
+    /inputs/*.in
+    /outputs/*.out
 contests/{contest_id}
     /{submission links (user_id/submission_id)}
     /{current status (user_id and completed problem count)}

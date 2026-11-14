@@ -37,6 +37,7 @@ deploy-server: build-cgi
 
 	# state directories
 	sudo mkdir -p /var/lib/ojudge
+	sudo cp -r assets/problems /var/lib/ojudge/problems
 	sudo mkdir -p /var/lib/ojudge/submissions
 	sudo mkdir -p /var/lib/ojudge/pending-review
 	sudo mkdir -p /var/lib/ojudge/problems
