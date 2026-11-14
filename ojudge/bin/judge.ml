@@ -1,4 +1,4 @@
-let command = "timeout 50 podman run --rm -v ./code:/code:ro -v ./inputs:/inputs:ro -v ./outputs:/outputs:rw --network=none --memory=256MB --cpus 1 judge"
+let command = "timeout 50 podman run --rm -v ./code:/code:ro -v ./inputs:/inputs:ro -v ./outputs:/outputs:rw --network=none --memory=256MB --memory-swap=256MB --cpus 1 judge"
 
 let getOldestPending () = 
   let pending = "/var/lib/ojudge/pending-review" in
@@ -32,10 +32,18 @@ let writeResults dir code =
     List.sort compare (Array.to_list (Sys.readdir (dir ^ "/expected"))) in
   let verdict name =
     let actual = dir ^ "/outputs/" ^ name in
-    if not (Sys.file_exists actual) then "MISSING"
+    let code =
+      try int_of_string (String.trim (readFile
+            (dir ^ "/outputs/" ^ Filename.remove_extension name ^ ".code")))
+      with _ -> 0 in
+    if code = 124 then "TIME LIMIT EXCEEDED"
+    else if code = 137 then "MEMORY LIMIT EXCEEDED"
+    else if code <> 0 then "RUNTIME ERROR"
+    else if not (Sys.file_exists actual) then "MISSING"
     else if String.trim (readFile actual)
             = String.trim (readFile (dir ^ "/expected/" ^ name)) then "PASS"
-    else "WRONG" in
+    else "WRONG"
+  in
   let lines = List.map (fun n -> (Filename.remove_extension n, verdict n)) names in
   let passed = List.length (List.filter (fun (_, v) -> v = "PASS") lines) in
   Out_channel.with_open_text (dir ^ "/results/results.txt") (fun oc ->

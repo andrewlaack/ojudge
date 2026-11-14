@@ -9,12 +9,6 @@ let copyDir src dst =
       if not (Sys.is_directory s) then copyFile s (Filename.concat dst name))
     (Sys.readdir src)
 
-let valid_id s =
-  s <> ""
-  && String.for_all
-       (function '0'..'9'-> true | _ -> false)
-       s
-
 let () = ignore (Unix.umask 0o002)
 
 let rec mkdir d =

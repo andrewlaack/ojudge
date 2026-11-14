@@ -16,5 +16,6 @@ INPUTS=$(ls /inputs)
 
 for INPUT in $INPUTS; do
     BASE=${INPUT%.*}
-    cat /inputs/$INPUT | /tmp/submission.out > /outputs/$BASE.out
+    cat /inputs/$INPUT | timeout 2 /tmp/submission.out > /outputs/$BASE.out
+    echo $? > /outputs/$BASE.code
 done
