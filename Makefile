@@ -28,6 +28,7 @@ build-cgi: build-ocaml
 	mkdir -p cgi-bin
 	cp scripts/home.sh cgi-bin/home
 	cp scripts/submit.sh cgi-bin/submit
+	cp scripts/problems.sh cgi-bin/problems
 
 
 deploy-server: build-cgi
@@ -37,7 +38,7 @@ deploy-server: build-cgi
 
 	# state directories
 	sudo mkdir -p /var/lib/ojudge
-	sudo cp -r assets/problems /var/lib/ojudge/problems
+	sudo cp -r assets/problems /var/lib/ojudge/
 	sudo mkdir -p /var/lib/ojudge/submissions
 	sudo mkdir -p /var/lib/ojudge/pending-review
 	sudo mkdir -p /var/lib/ojudge/problems
