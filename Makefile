@@ -4,6 +4,7 @@ build-container:
 
 build-ocaml:
 	cd ojudge && dune build
+	mkdir -p cgi-bin
 	cp ojudge/_build/default/bin/submissions.exe cgi-bin/submit-code
 	chmod 755 cgi-bin/submit-code
 run-container:
@@ -27,8 +28,10 @@ run-judge: build-container
 build-cgi: build-ocaml
 	mkdir -p cgi-bin
 	cp scripts/home.sh cgi-bin/home
+	cp scripts/status.sh cgi-bin/status
 	cp scripts/submit.sh cgi-bin/submit
 	cp scripts/problems.sh cgi-bin/problems
+	chmod 755 cgi-bin/*
 
 
 deploy-server: build-cgi
@@ -43,9 +46,11 @@ deploy-server: build-cgi
 	sudo mkdir -p /var/lib/ojudge/pending-review
 	sudo mkdir -p /var/lib/ojudge/problems
 	sudo mkdir -p /var/lib/ojudge/contests
-	sudo chown -R http:http /var/lib/ojudge
+	sudo chown -R http:ojudge /var/lib/ojudge
+	sudo find /var/lib/ojudge -type d -exec chmod g+s {} +
 
 	# just in case
 	sudo chown -R root:root /srv/http
-	sudo chmod 755 /srv/http/cgi-bin
+	sudo chmod -R g+rwX /var/lib/ojudge
+	sudo find /var/lib/ojudge -type d -exec chmod g+s {} +
 	sudo systemctl restart lighttpd

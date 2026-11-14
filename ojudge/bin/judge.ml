@@ -24,14 +24,37 @@ let getOldestPending () =
   | None -> None
   | Some (_, user, id) -> Some (user, id)
 
+
+let readFile p = In_channel.with_open_bin p In_channel.input_all
+
+let writeResults dir code =
+  let names =
+    List.sort compare (Array.to_list (Sys.readdir (dir ^ "/expected"))) in
+  let verdict name =
+    let actual = dir ^ "/outputs/" ^ name in
+    if not (Sys.file_exists actual) then "MISSING"
+    else if String.trim (readFile actual)
+            = String.trim (readFile (dir ^ "/expected/" ^ name)) then "PASS"
+    else "WRONG" in
+  let lines = List.map (fun n -> (Filename.remove_extension n, verdict n)) names in
+  let passed = List.length (List.filter (fun (_, v) -> v = "PASS") lines) in
+  Out_channel.with_open_text (dir ^ "/results/results.txt") (fun oc ->
+    if code = 124 then output_string oc "TIME LIMIT EXCEEDED\n";
+    Printf.fprintf oc "%d/%d passed\n" passed (List.length lines);
+    List.iter (fun (n, v) -> Printf.fprintf oc "%s: %s\n" n v) lines)
+
+
 let judgeOldest () =
   match getOldestPending () with
   | None -> None
   | Some (user, id) ->
       let dir = Printf.sprintf "/var/lib/ojudge/submissions/%s/%s" user id in
-      let cmd = Printf.sprintf "cd %s && %s" (Filename.quote dir) command in
-        let () =  print_endline ("Executing: " ^ cmd) in
+      let cmd = Printf.sprintf "cd %s && %s > results/output.txt 2>&1"
+                  (Filename.quote dir) command in
+      print_endline ("Executing: " ^ cmd);
       let code = Sys.command cmd in
+      (try writeResults dir code
+       with e -> prerr_endline ("judging " ^ id ^ ": " ^ Printexc.to_string e));
       Sys.remove (Printf.sprintf "/var/lib/ojudge/pending-review/%s/%s" user id);
       Some code
 
